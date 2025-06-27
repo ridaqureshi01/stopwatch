@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stop Watch</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="stopwatch">
+    <div class="time" id="display">00:00:00</div>
+    <div class="buttons">
+      <button id="startBtn">Start</button>
+      <button id="pauseBtn">Pause</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+    <div class="laps" id="laps">
+      <!-- Laps will appear here -->
+    </div>
+  </div>
+
+  <script>
+    let startTime = 0;
+    let elapsedTime = 0;
+    let timerInterval;
+    let lapCount = 0;
+
+    const display = document.getElementById('display');
+    const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const lapsContainer = document.getElementById('laps');
+
+    function updateDisplay(time) {
+      const milliseconds = Math.floor((time % 1000) / 10);
+      const seconds = Math.floor((time / 1000) % 60);
+      const minutes = Math.floor((time / (1000 * 60)) % 60);
+
+      const formattedTime =
+        `${String(minutes).padStart(2, '0')}:` +
+        `${String(seconds).padStart(2, '0')}:` +
+        `${String(milliseconds).padStart(2, '0')}`;
+
+      display.textContent = formattedTime;
+      return formattedTime;
+    }
+
+    function startTimer() {
+      startTime = Date.now() - elapsedTime;
+      timerInterval = setInterval(() => {
+        elapsedTime = Date.now() - startTime;
+        updateDisplay(elapsedTime);
+      }, 10);
+      startBtn.disabled = true;
+    }
+
+    function pauseTimer() {
+      clearInterval(timerInterval);
+      startBtn.disabled = false;
+      saveLap();
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      startTime = 0;
+      elapsedTime = 0;
+      lapCount = 0;
+      updateDisplay(0);
+      lapsContainer.innerHTML = '';
+      startBtn.disabled = false;
+    }
+
+    function saveLap() {
+      lapCount++;
+      const lapTime = updateDisplay(elapsedTime);
+      const lapElement = document.createElement('div');
+      lapElement.classList.add('lap');
+      lapElement.innerHTML = `<span>Lap ${lapCount}</span><span>${lapTime}</span>`;
+      lapsContainer.prepend(lapElement);
+    }
+
+    startBtn.addEventListener('click', startTimer);
+    pauseBtn.addEventListener('click', pauseTimer);
+    resetBtn.addEventListener('click', resetTimer);
+  </script>
+
+</body>
+</html>
+
+
