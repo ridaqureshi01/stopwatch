@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stopwatch</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background-color: #c8d7f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      padding: 20px;
+    }
+
+    .stopwatch {
+      background-color: white;
+      padding: 40px 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      text-align: center;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .time {
+      font-size: 4rem;
+      margin-bottom: 35px;
+      color: #333;
+      letter-spacing: 2px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: nowrap;
+    }
+
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 30px;
+      font-size: 1.1rem;
+      color: white;
+      cursor: pointer;
+      width: 120px;
+      transition: background 0.3s ease;
+    }
+
+    .start {
+      background-color: #28a745;
+    }
+    .start:hover:not(:disabled) {
+      background-color: #218838;
+    }
+
+    .pause {
+      background-color: #dc3545;
+    }
+    .pause:hover:not(:disabled) {
+      background-color: #c82333;
+    }
+
+    .reset {
+      background-color: #6c757d;
+    }
+    .reset:hover:not(:disabled) {
+      background-color: #5a6268;
+    }
+
+    button:disabled {
+      background-color: #bcbcbc;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 450px) {
+      .time {
+        font-size: 3rem;
+      }
+      .buttons {
+        gap: 10px;
+      }
+      button {
+        width: 100px;
+        font-size: 1rem;
+        padding: 10px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="stopwatch">
+    <div class="time" id="display">00:00:00</div>
+    <div class="buttons">
+      <button class="start" id="startBtn">Start</button>
+      <button class="pause" id="pauseBtn" disabled>Pause</button>
+      <button class="reset" id="resetBtn" disabled>Reset</button>
+    </div>
+  </div>
+
+  <script>
+    let startTime = 0;
+    let elapsedTime = 0;
+    let timerInterval;
+    let running = false;
+
+    const display = document.getElementById('display');
+    const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    function updateDisplay(time) {
+      const milliseconds = Math.floor((time % 1000) / 10);
+      const seconds = Math.floor((time / 1000) % 60);
+      const minutes = Math.floor((time / (1000 * 60)) % 60);
+
+      const formattedTime =
+        `${String(minutes).padStart(2, '0')}:` +
+        `${String(seconds).padStart(2, '0')}:` +
+        `${String(milliseconds).padStart(2, '0')}`;
+
+      display.textContent = formattedTime;
+    }
+
+    function startTimer() {
+      startTime = Date.now() - elapsedTime;
+      timerInterval = setInterval(() => {
+        elapsedTime = Date.now() - startTime;
+        updateDisplay(elapsedTime);
+      }, 10);
+      running = true;
+
+      
+      startBtn.style.display = 'none';
+      pauseBtn.disabled = false;
+      resetBtn.disabled = true;
+    }
+
+    function pauseTimer() {
+      clearInterval(timerInterval);
+      elapsedTime = Date.now() - startTime;
+      running = false;
+
+  
+      startBtn.style.display = 'inline-block';
+      pauseBtn.disabled = true;
+      resetBtn.disabled = false;
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      startTime = 0;
+      elapsedTime = 0;
+      running = false;
+      updateDisplay(0);
+
+      
+      startBtn.style.display = 'inline-block';
+      pauseBtn.disabled = true;
+      resetBtn.disabled = true;
+    }
+
+    startBtn.addEventListener('click', startTimer);
+    pauseBtn.addEventListener('click', pauseTimer);
+    resetBtn.addEventListener('click', resetTimer);
+  </script>
+
+</body>
+</html>
